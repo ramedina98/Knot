@@ -5,36 +5,44 @@
  */
 package syntax;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SyntaxAnalyzer {
     // A list of tokens to be analyzed
     private List<Token> tokens;
-    // Index to track the current token being analyzed... 
+    // Index to track the current token being analyzed...
     private int currentTokenIndex;
+    // a map to store variable names and their types..
+    private Map<String, String> variableTable;
 
     // constructor to initilize the list of tokens and set the current token index to 0
     public SyntaxAnalyzer(List<Token> tokens){
         this.tokens = tokens;
         this.currentTokenIndex = 0;
+        this.variableTable = new HashMap<>();
     }
 
     //Method to start the syntax analysis
     public void analyze() throws SyntaxException{
         //loop through all tokens and parse each variable declaration
         while (currentTokenIndex < tokens.size()) {
-            parseVariableDeclaration(); 
+            parseVariableDeclaration();
         }
     }
 
     // method to parse a variable declaration...
     private void parseVariableDeclaration() throws SyntaxException{
         //Expect an identifier token...
-        Token identifier = expect(TokenType.IDENTIFIER); 
+        Token identifier = expect(TokenType.IDENTIFIER);
         expect(TokenType.COLON); // Expect a colon token
         Token type = expect(TokenType.TYPE); // Expect a type token
         expect(TokenType.EQUALS); // Expect an equals token
         Token value = expect(TokenType.NUMBER); // Expect a number token (assuming only numbers for simplicity)
         expect(TokenType.DOT); // Expect a dot token
+
+        // store the variables in the variable table...
+        variableTable.put(identifier.getValue(), type.getValue());
 
         // Perform semantic validation on the parsed type and value
         validateType(type, value);
@@ -44,7 +52,7 @@ public class SyntaxAnalyzer {
     private Token expect(TokenType expectedType) throws SyntaxException{
         //check if the current token index is beyond the list of tokens...
         if(currentTokenIndex >= tokens.size()){
-            throw new SyntaxException("Unexpected end of input"); 
+            throw new SyntaxException("Unexpected end of input");
         }
         //get the current token...
         Token token = tokens.get(currentTokenIndex); // get the current token...
