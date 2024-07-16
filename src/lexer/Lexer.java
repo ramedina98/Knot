@@ -16,105 +16,137 @@ import syntax.Token;
 import syntax.TokenType;
 
 public class Lexer {
-    // read for input string...
+    // StringReader to read input string
     private StringReader reader;
-    // current character being read...
+    // Current character being processed
     private int currentChar;
 
-    // constructor to initialize the lexer with a StringReader...
+    // Constructor to initialize StringReader and start reading the first character
     public Lexer(StringReader reader) {
         this.reader = reader;
-        // read the first character...
-        this.currentChar = readChar();
+        this.currentChar = readChar();  // Initialize currentChar with the first character
     }
 
-    // method to read the next character from the reader...
+    // Method to read the next character from the input StringReader
     private int readChar() {
         try {
-            return reader.read(); // read the next character
+            return reader.read();   // Read and return the next character's ASCII value
         } catch (IOException e) {
-            return -1; // End of stream
+            return -1; // End of stream, return -1 when no more characters to read
         }
     }
 
-    // method to tokenize the input string...
+    // Method to tokenize the input and return a list of tokens
     public List<Token> tokenize() {
-        // list to hold tokens...
+        // List to store tokens
         List<Token> tokens = new ArrayList<>();
 
-        // continue until end of input...
+        // Continue until end of input stream is reached
         while (currentChar != -1) {
             // Check if current character is a letter
             if (Character.isLetter(currentChar)) {
-                // Read an identifier or type token
-                tokens.add(readIdentifierOrType());
+                // Read identifier, type, or boolean token
+                tokens.add(readIdentifierOrTypeOrBoolean());
             } else if (currentChar == ':') {// Check if current character is a colon
-                // Add a colon token
+                // Colon token
                 tokens.add(new Token(TokenType.COLON, ":"));
-                // Read the next character
+                // Read next character
                 currentChar = readChar();
-            } else if (currentChar == '=') { // Check if current character is an equals sign
-                // Add an equals token
+            } else if (currentChar == '=') {// Check if current character is an equals sign
+
+                // Equals token
                 tokens.add(new Token(TokenType.EQUALS, "="));
-                // Read the next character
+                // Read next character
                 currentChar = readChar();
-            } else if (Character.isDigit(currentChar)) {// Check if current character is a digit
-                // Read a number token
+            } else if (Character.isDigit(currentChar)) { // Check if current character is a digit
+                // Read number token
                 tokens.add(readNumber());
-            } else if (currentChar == '.') { // Check if current character is a dot
-                // Add a dot token
+            } else if (currentChar == '.') {// Check if current character is a dot
+                // Dot token
                 tokens.add(new Token(TokenType.DOT, "."));
-                // Read the next character
+                // Read next character
                 currentChar = readChar();
-            } else {// Skip whitespace and any other unrecognized characters
-                // read the next character...
-                currentChar = readChar();
+            } else if (currentChar == '*') {
+                // Read string literal token
+                tokens.add(readStringLiteral());
+            } else {
+                // Skip whitespace and other characters not explicitly handled
+                currentChar = readChar();  // Read next character
             }
         }
-
-        // return the list of tokens...
-        return tokens;
+        return tokens;  // Return the list of tokens
     }
 
-    // Method to read an identifier or type token
-    private Token readIdentifierOrType() {
-        // StringBuilder to build the token value
+    // Method to read an identifier, type, or boolean token
+    private Token readIdentifierOrTypeOrBoolean() {
+        // StringBuilder to accumulate characters
         StringBuilder sb = new StringBuilder();
 
-        // Continue while the character is a letter or digit
+        // While character is letter or digit
         while (Character.isLetterOrDigit(currentChar)) {
-            // Append the character to the StringBuilder
+            // Append current character to StringBuilder
             sb.append((char) currentChar);
-            // Read the next character
+            // Read next character
             currentChar = readChar();
         }
-
-        // Convert the StringBuilder to a string
+        // Convert StringBuilder to String
         String value = sb.toString();
 
         // Check if the value is a predefined type
-        if (value.equals("Number") || value.equals("String") || value.equals("Boolean")) {
-            return new Token(TokenType.TYPE, value);// Return a type token
+        if (value.equals("Number") || value.equals("Text") || value.equals("Bool")) {
+            return new Token(TokenType.TYPE, value);  // Return type token
+        }
+
+        // Check if the value is a boolean literal
+        if (value.equals("True") || value.equals("False")) {
+            // If the value matches either "True" or "False", it is a boolean literal.
+            // Create a new Token object with the type TokenType.BOOLEAN.
+            // The token's value will be the string value ("True" or "False").
+            return new Token(TokenType.BOOLEAN, value);
+            // Return the newly created Token to the caller.
         }
 
         // Return an identifier token
-        return new Token(TokenType.IDENTIFIER, value);
+        return new Token(TokenType.IDENTIFIER, value);  // Return identifier token
     }
 
     // Method to read a number token
     private Token readNumber() {
-        // StringBuilder to build the token value
+        // StringBuilder to accumulate digits
         StringBuilder sb = new StringBuilder();
 
-        // Continue while the character is a digit
+        // While character is a digit
         while (Character.isDigit(currentChar)) {
-            // Append the character to the StringBuilder
+            // Append current character to StringBuilder
             sb.append((char) currentChar);
-            // Read the next character
+            // Read next character
             currentChar = readChar();
         }
 
-        // Return a number token
+        // Return number token
         return new Token(TokenType.NUMBER, sb.toString());
+    }
+
+    // Method to read a string literal token enclosed in quotes
+    private Token readStringLiteral() {
+        // Store the opening quote character
+        char startType = (char) currentChar;
+        // StringBuilder to accumulate characters
+        StringBuilder sb = new StringBuilder();
+        // Read next character, skip the opening quote
+        currentChar = readChar();
+
+        // While not closing quote or end of input
+        while (currentChar != startType && currentChar != -1) {
+            // Append current character to StringBuilder
+            sb.append((char) currentChar);
+            // Read next character
+            currentChar = readChar();
+        }
+        // Read next character, skip the closing quote
+        currentChar = readChar();
+
+        // Return string literal token
+        return new Token(TokenType.STRING, sb.toString());
     }
 }

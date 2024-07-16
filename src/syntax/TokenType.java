@@ -11,5 +11,8 @@ public enum TokenType {
     TYPE,       // Represents a type token
     EQUALS,     // Represents an equals token
     NUMBER,     // Represents a number token
-    DOT         // Represents a dot token
+    DOT,         // Represents a dot token
+    STRING,  // token type for string literals
+    BOOLEAN, // token type for boolean values
+    TEXT     // token type for text (can be same as TYPE)
 }
