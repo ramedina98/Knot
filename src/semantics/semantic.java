@@ -1,19 +1,5 @@
 package semantics;
 
-/*
-Text: Este tipo de dato abarcara “string” y “chart”.
-Declaración: variable : Text.
-Declaración inicializada: variable : Text = *string o chart*.
-Number: Este tipo de dato abarcara int, float y double.
-Proyecto Final 6
-Declaración: variable : Number.
-Declaración inicializada: variable : Number = 3.
-Bool: Este tipo de dato es igual a los booleanos, solo que sera de una manera
-abreviada.
-Declaración: variable : Bool.
-Declaración inicializada: variable : Bool = True.
-*/
-
 
 import java.util.regex.*;
 import java.util.*;
@@ -28,6 +14,7 @@ public class semantic {
     public void parseText(String texto) {
         String[] lineas = texto.split("\\n");
 
+        //patrones de todo
         Pattern varPattern = Pattern.compile("(Text|Number|Bool)\\s+([A-Za-z0-9]+)\\s*(=\\s*(.*))?;");
         Pattern ifPattern = Pattern.compile("Slip\\s+'([A-Za-z0-9]+\\s*(==|≠|>|<|≥|≤)\\s*[A-Za-z0-9]+)'\\s*\\((.*)\\)");
         Pattern elseIfPattern = Pattern.compile("SlipKnot\\s+'([A-Za-z0-9]+\\s*(==|≠|>|<|≥|≤)\\s*[A-Za-z0-9]+)'\\s*\\((.*)\\)");
@@ -38,6 +25,7 @@ public class semantic {
         Pattern defaultPattern = Pattern.compile("Default\\s*\\((.*)\\)");
         Pattern mathPattern = Pattern.compile("Math\\{(.*)\\}");
 
+        //matchers de todo
         for (String linea : lineas) {
             Matcher varMatcher = varPattern.matcher(linea.trim());
             Matcher ifMatcher = ifPattern.matcher(linea.trim());
@@ -49,6 +37,7 @@ public class semantic {
             Matcher defaultMatcher = defaultPattern.matcher(linea.trim());
             Matcher mathMatcher = mathPattern.matcher(linea.trim());
 
+            //revision de variables
             if (varMatcher.matches()) {
                 String tipo = varMatcher.group(1);
                 String nombre = varMatcher.group(2);
@@ -60,6 +49,7 @@ public class semantic {
                     variables.put(nombre, new Variable(tipo, nombre, valor));
                 }
                 System.out.println("Variable Aceptada: " + nombre + (valor.isEmpty() ? "" : " = " + valor));
+                    //matcher de if(slip, knot, slipknot)
             } else if (ifMatcher.matches()) {
                 String condition = ifMatcher.group(1);
                 String operation = ifMatcher.group(2);
@@ -75,12 +65,16 @@ public class semantic {
             } else if (elseMatcher.matches()) {
                 String operation = elseMatcher.group(1);
                 executeOperation(operation);
+
+                //matcher del while(Circle) 
             } else if (whileMatcher.matches()) {
                 String condition = whileMatcher.group(1);
                 String operation = whileMatcher.group(2);
                 while (evaluateCondition(condition)) {
                     executeOperation(operation);
                 }
+
+                //matcher del for (everythingfor)
             } else if (forMatcher.matches()) {
                 int start = Integer.parseInt(forMatcher.group(1));
                 int end = Integer.parseInt(forMatcher.group(2));
@@ -90,6 +84,8 @@ public class semantic {
                     variables.put("TheEnd", new Variable("Number", "TheEnd", (double) i));
                     executeOperation(operation);
                 }
+
+                //matcher del switch case
             } else if (switchMatcher.matches()) {
                 String variableName = switchMatcher.group(1);
                 String[] cases = switchMatcher.group(2).split(";");
@@ -107,6 +103,8 @@ public class semantic {
                         }
                     }
                 }
+
+                //matcher del default
             } else if (defaultMatcher.matches()) {
                 String operation = defaultMatcher.group(1);
                 executeOperation(operation);
@@ -120,9 +118,10 @@ public class semantic {
         }
     }
 
+    //evaluacion de condicionales (+-*/),(==,!=,<,>)
     private boolean evaluateCondition(String condition) {
         // Evaluar las condiciones booleanas y de comparación
-        String[] parts = condition.split("\\s*(==|≠|>|<|≥|≤)\\s*");
+        String[] parts = condition.split("\\s*(==|!=|>|<|>=|<=)\\s*");
         if (parts.length != 2) return false;
 
         String left = parts[0];
@@ -134,11 +133,11 @@ public class semantic {
 
         switch (operator) {
             case "==": return leftValue == rightValue;
-            case "≠": return leftValue != rightValue;
+            case "!=": return leftValue != rightValue;
             case ">": return leftValue > rightValue;
             case "<": return leftValue < rightValue;
-            case "≥": return leftValue >= rightValue;
-            case "≤": return leftValue <= rightValue;
+            case ">=": return leftValue >= rightValue;
+            case "<=": return leftValue <= rightValue;
             default: return false;
         }
     }
@@ -162,6 +161,7 @@ public class semantic {
         }
     }
 
+    //evaluacion de operaciones
     private void executeOperation(String operation) {
         // Ejecutar operaciones aritméticas simples
         String[] parts = operation.split("\\s*(\\+|\\-|#|\\/)\\s*");
