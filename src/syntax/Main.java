@@ -37,10 +37,11 @@ public class Main {
         }
 
         String[] codes1 = {
-            "Slip (0 > 1) { a = b + 1; }",
-            "Circle (a < 10) { a = a + 1; }",
-            "EverythingEnds (i = 0; i < 10; i = i + 1) { sum = sum + i; }",
-            "Duality (day) { case 1: dayName = *Monday*: break: }"
+            "Slip (0 >= 1) { a = b + 1;}",
+            "Knot { a = b - 1; }",
+            "SlipKnot (0 >= 1) { a= b+1;}",
+            "Circle (a <= 10) { a = a + 1;}",
+            "EverythingEnds (0, 10, 1,) { sum = sum + 10;}",
         };
 
         for (String code : codes1) {

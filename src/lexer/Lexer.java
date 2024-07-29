@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 import syntax.Token;
 import syntax.TokenType;
 
@@ -20,20 +21,42 @@ public class Lexer {
     private StringReader reader;
     // Current character being processed
     private int currentChar;
+    // Stack to kep track of previus characters...
+    private Stack<Integer> previousChars;
 
     // Constructor to initialize StringReader and start reading the first character
     public Lexer(StringReader reader) {
         this.reader = reader;
+        this.previousChars = new Stack<>();
         this.currentChar = readChar();  // Initialize currentChar with the first character
     }
 
     // Method to read the next character from the input StringReader
     private int readChar() {
-        try {
-            return reader.read();   // Read and return the next character's ASCII value
-        } catch (IOException e) {
-            return -1; // End of stream, return -1 when no more characters to read
+        try{
+            int ch = reader.read(); // Read and return the next character's ASCII value...
+            if(ch != -1){
+                previousChars.push(ch);
+            }
+            return ch;
+        } catch(IOException e){
+            return -1; // End of stream, return -1 when no more caracters to read...
         }
+    }
+
+    // method to read the previous character fromt the input stringreader...
+    private int readPreviousChar() {
+        if(!previousChars.isEmpty()){
+            // Pop the current character (the one we`re "backtracking" from)
+            previousChars.pop();
+            // peek the next previos char, which is now the current one...
+            if(!previousChars.isEmpty()){
+                return previousChars.peek();
+            }
+        }
+
+        // return -1 if there are no previous characters...
+        return -1;
     }
 
     // Method to tokenize the input and return a list of tokens
@@ -55,7 +78,7 @@ public class Lexer {
             } else if (currentChar == '=') {// Check if current character is an equals sign
                 tokens.add(readEqualsOrCondition());
             } else if (Character.isDigit(currentChar)) { // Check if current character is a digit
-                // Read number token
+                // read the number...
                 tokens.add(readNumber());
             } else if (currentChar == '.') {// Check if current character is a dot
                 // Dot token
@@ -98,11 +121,15 @@ public class Lexer {
             } else if(currentChar == '/'){
                 tokens.add(new Token(TokenType.DIVIDE, "/"));
                 currentChar = readChar();
+            } else if(currentChar == ','){ // this condition helps us to find parameter in the EverythingEnds control structure...
+                tokens.add(readParameters());
+                currentChar = readChar();
             } else {
                 // Skip whitespace and other characters not explicitly handled
                 currentChar = readChar();  // Read next character
             }
         }
+
         return tokens;  // Return the list of tokens
     }
 
@@ -209,6 +236,24 @@ public class Lexer {
         } else{
             return new Token(TokenType.MINUS, "-");
         }
+    }
+
+    // this method helps us to check if the caracter before and comma is a number, if it is a number is a paramter in the...
+    //control structure "EveruthingEnds"...
+    private Token readParameters() {
+        StringBuilder number = new StringBuilder();
+        // read the previous charter before comma...
+        int prevChar = readPreviousChar();
+
+        // if the previous character is a digit, accumulate...
+        while (Character.isDigit(prevChar)) {
+            number.insert(0, (char) prevChar); // insert at the beginning...
+            prevChar = readPreviousChar();
+        }
+
+        // create and return the token with the accumulate number...
+        String parameter = number.toString();
+        return new Token(TokenType.PARAMETERS, parameter);
     }
 
     // Method to read a number token
