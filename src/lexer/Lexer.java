@@ -53,11 +53,7 @@ public class Lexer {
                 // Read next character
                 currentChar = readChar();
             } else if (currentChar == '=') {// Check if current character is an equals sign
-
-                // Equals token
-                tokens.add(new Token(TokenType.EQUALS, "="));
-                // Read next character
-                currentChar = readChar();
+                tokens.add(readEqualsOrCondition());
             } else if (Character.isDigit(currentChar)) { // Check if current character is a digit
                 // Read number token
                 tokens.add(readNumber());
@@ -69,6 +65,39 @@ public class Lexer {
             } else if (currentChar == '*') {
                 // Read string literal token
                 tokens.add(readStringLiteral());
+            }
+            /**
+             * This are require to tokenizing control structures
+             */
+            else if(currentChar == '{'){
+                tokens.add(new Token(TokenType.LEFT_BRACE, "{"));
+                currentChar = readChar();
+            } else if(currentChar == '}'){
+                tokens.add(new Token(TokenType.RIGHT_BRACE, "}"));
+                currentChar = readChar();
+            } else if(currentChar == '('){
+                tokens.add(new Token(TokenType.LEFT_PAREN, "("));
+                currentChar = readChar();
+            } else if(currentChar == ')'){
+                tokens.add(new Token(TokenType.RIGHT_PAREN, ")"));
+                currentChar = readChar();
+            } else if(currentChar == '<'){
+                tokens.add(readLessOrCondition());
+            } else if(currentChar == '>'){
+                tokens.add(readGreaterOrCondition());
+            } else if(currentChar == ';'){
+                tokens.add(new Token(TokenType.SEMICOLON, ";"));
+                currentChar = readChar();
+            }else if(currentChar == '+'){
+                tokens.add(readPlusOrIncrement());
+            } else if(currentChar == '-'){
+                tokens.add(readMinusOrCondition());
+            } else if(currentChar == '#'){
+                tokens.add(new Token(TokenType.MULTIPLY, "#"));
+                currentChar = readChar();
+            } else if(currentChar == '/'){
+                tokens.add(new Token(TokenType.DIVIDE, "/"));
+                currentChar = readChar();
             } else {
                 // Skip whitespace and other characters not explicitly handled
                 currentChar = readChar();  // Read next character
@@ -106,8 +135,80 @@ public class Lexer {
             // Return the newly created Token to the caller.
         }
 
-        // Return an identifier token
-        return new Token(TokenType.IDENTIFIER, value);  // Return identifier token
+        switch(value){
+            case "Slip":
+                return new Token(TokenType.SLIP, value);
+            case "Knot":
+                return new Token(TokenType.KNOT, value);
+            case "SlipKnot":
+                return new Token(TokenType.SLIPKNOT, value);
+            case "Circle":
+                return new Token(TokenType.CIRCLE, value);
+            case "EverythingEnds":
+                return new Token(TokenType.EVERYTHINGENDS, value);
+            case "Duality":
+                return new Token(TokenType.DUALITY, value);
+            default:
+                return new Token(TokenType.IDENTIFIER, value);
+        }
+    }
+
+    // This method helps us to indetify if the token type is a condition or an equals...
+    private Token readEqualsOrCondition(){
+        currentChar = readChar();
+        if(currentChar == '='){
+            currentChar = readChar();
+            return new Token(TokenType.CONDITION, "==");
+        } else{
+            return new Token(TokenType.EQUALS, "=");
+        }
+    }
+
+    // this method helps us to identify if the token is a less or a condition...
+    private Token readLessOrCondition(){
+        currentChar = readChar();
+        if(currentChar == '='){
+            currentChar = readChar();
+            return new Token(TokenType.CONDITION, "<=");
+        } else{
+            return new Token(TokenType.LESS_THAN, "<");
+        }
+    }
+
+    // this method helps us to identify if the token is a greater than or a condition...
+    private Token readGreaterOrCondition(){
+        currentChar = readChar();
+        if(currentChar == '='){
+            currentChar = readChar();
+            return new Token(TokenType.CONDITION, ">=");
+        } else{
+            return new Token(TokenType.GREATER_THAN, ">");
+        }
+    }
+
+    // this method helps us to identify if the token is a plus or a increment...
+    private Token readPlusOrIncrement(){
+        currentChar = readChar();
+        if(currentChar == '+'){
+            currentChar = readChar();
+            return new Token(TokenType.OPERATION, "++");
+        } else if(currentChar == '='){
+            currentChar = readChar();
+            return new Token(TokenType.OPERATION, "+=");
+        } else{
+            return new Token(TokenType.PLUS, "+");
+        }
+    }
+
+    // this method helps us to minus or condition...
+    private Token readMinusOrCondition(){
+        currentChar = readChar();
+        if(currentChar == '='){
+            currentChar = readChar();
+            return new Token(TokenType.CONDITION, "-=");
+        } else{
+            return new Token(TokenType.MINUS, "-");
+        }
     }
 
     // Method to read a number token

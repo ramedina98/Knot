@@ -25,27 +25,33 @@ public class Main {
             Lexer lexer = new Lexer(new StringReader(code));
             List<Token> tokens = lexer.tokenize();
 
-            SyntaxAnalyzer syntaxAnalyzer = new SyntaxAnalyzer(tokens);
+            SyntaxAnalyzerVariables syntaxAnalyzer = new SyntaxAnalyzerVariables(tokens);
             try {
                 syntaxAnalyzer.analyze();
                 System.out.println("Syntax is correct.");
 
-                // Simular la reasignación de valor para la variable "uno"
-                if (code.startsWith("uno")) {
-                    // Crear una nueva entrada de tokens para reasignación
-                    String reassignCode = "uno : Number = 2 .";
-                    System.out.println("Reassigning value: " + reassignCode);
+            } catch (SyntaxException e) {
+                System.err.println("Syntax error: " + e.getMessage());
+            }
+            System.out.println();
+        }
 
-                    // Tokenizar y analizar la reasignación
-                    Lexer reassignLexer = new Lexer(new StringReader(reassignCode));
-                    List<Token> reassignTokens = reassignLexer.tokenize();
-                    SyntaxAnalyzer reassignAnalyzer = new SyntaxAnalyzer(reassignTokens);
+        String[] codes1 = {
+            "Slip (0 > 1) { a = b + 1; }",
+            "Circle (a < 10) { a = a + 1; }",
+            "EverythingEnds (i = 0; i < 10; i = i + 1) { sum = sum + i; }",
+            "Duality (day) { case 1: dayName = *Monday*: break: }"
+        };
 
-                    reassignAnalyzer.analyze();  // Ejecutar el análisis de reasignación
-                    System.out.println("Value reassigned successfully.");
-                    syntaxAnalyzer.printVariableTable();
-                }
+        for (String code : codes1) {
+            System.out.println("Testing code: " + code);
+            Lexer lexer = new Lexer(new StringReader(code));
+            List<Token> tokens = lexer.tokenize();
 
+            SyntaxAnalyzerControlStructures syntaxAnalyzer = new SyntaxAnalyzerControlStructures(tokens);
+            try {
+                syntaxAnalyzer.analyze();
+                System.out.println("Syntax is correct.");
             } catch (SyntaxException e) {
                 System.err.println("Syntax error: " + e.getMessage());
             }

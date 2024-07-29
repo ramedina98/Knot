@@ -2,13 +2,14 @@
  * @author Ricardo Medina
  * @date 09/07/2024
  * @description: this will be the code that will check the language syntax
+ * This is to analize the syntax of the variables...
  */
 package syntax;
 import java.util.List;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SyntaxAnalyzer {
+public class SyntaxAnalyzerVariables {
     // List of tokens to be analyzed
     private List<Token> tokens;
     // Index of the current token being processed
@@ -17,7 +18,7 @@ public class SyntaxAnalyzer {
     private Map<String, Token> variableTable;
 
     // Constructor to initialize with a list of tokens
-    public SyntaxAnalyzer(List<Token> tokens) {
+    public SyntaxAnalyzerVariables(List<Token> tokens) {
         // Initialize tokens
         this.tokens = tokens;
         // Start at the beginning of the token list
