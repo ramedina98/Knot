@@ -228,6 +228,8 @@ public class semantic {
         for (Variable var : parser.getVariables()) {
             System.out.println("Tipo: " + var.getTipo() + ", Nombre: " + var.getNombre() + ", Valor: " + var.getValor());
         }
+
+        scanner.close();
     }
 }
 
