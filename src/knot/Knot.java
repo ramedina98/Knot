@@ -2,8 +2,7 @@ package knot;
 
 // Este va a hacer el main principal, aqui es donde tendremos que mandar a llamar nuestro formulario para que aparesca en el
 // .jar
-import javax.swing.JFrame;
-import javax.swing.JLabel;
+import gui.Interfaz;
 import javax.swing.SwingUtilities;
 
 /**
@@ -18,17 +17,9 @@ public class Knot {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                createAndShowGUI();
+                Interfaz interfaz = new Interfaz();
+                interfaz.setVisible(true);
             }
         });
     }
-
-    private static void createAndShowGUI() {
-        JFrame frame = new JFrame("Mi Aplicación");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 300);
-        frame.add(new JLabel("Hola, Mundo!"));
-        frame.setVisible(true);
-    }
-
 }
