@@ -124,7 +124,6 @@ public class SyntaxAnalyzerControlStructures {
         expect(TokenType.LEFT_BRACE);
         parseShowAssignment();
         expect(TokenType.RIGHT_BRACE);
-        expect(TokenType.DOT);
     }
 
     /**

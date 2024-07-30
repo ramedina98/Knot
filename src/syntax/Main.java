@@ -5,6 +5,8 @@ import java.io.StringReader;
 import java.util.List;
 
 import lexer.Lexer;
+import semantics.Semantic;
+import utils.Variable;
 
 /**
  * Seguir trabajando en:
@@ -14,10 +16,10 @@ import lexer.Lexer;
 public class Main {
     public static void main(String[] args) {
         String[] codes = {
-            "uno : Number = 14567 .",         // Caso 1: Declaración de variable Number
-            "variable : Text = *hola* .",    // Caso 2: Declaración de variable Text con string literal
-            "variable : Text = *chart*.",    // Caso 3: Declaración de variable Text con chart (debe dar error)
-            "variable : Bool = True ."       // Caso 4: Declaración de variable Bool
+            "uno : Number = 14567 ",         // Caso 1: Declaración de variable Number
+            "variable : Text = *hola* ",    // Caso 2: Declaración de variable Text con string literal
+            "variable : Text = *chart*",    // Caso 3: Declaración de variable Text con chart (debe dar error)
+            "variable : Bool = True "       // Caso 4: Declaración de variable Bool
         };
 
         for (String code : codes) {
@@ -42,11 +44,11 @@ public class Main {
             "SlipKnot (0 >= 1) { a= b+1;}",
             "Circle (a <= 10) { a = a + 1;}",
             "EverythingEnds (0, 10, 1,) { sum = sum + 10;}",
-            "Show { * hola a todos * & a}.",
-            "Slip (0 >= 1) { a = b + 1; Show{ *Hello, World!* }. }",
-            "Show {*The result is: * & result & * which is great!*}.",
-            "Show {*El numero es: * & a}.",
-            "Show {a & * Hola*}."
+            "Show { * hola a todos * & a}",
+            "Slip (0 >= 1) { a = b + 1; Show{ *Hello, World!* } }",
+            "Show {*The result is: * & result & * which is great!*}",
+            "Show {*El numero es: * & a}",
+            "Show {a & * Hola*}"
         };
 
         for (String code : codes1) {
@@ -64,27 +66,35 @@ public class Main {
             System.out.println();
         }
 
-        /**
-         * public static void main(String[] args) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Introduce el texto a analizar (termina con una línea vacía):");
+        String[] codes2 = {
+            "b : Number = 0",
+            "a : Text = *todo va bien*",
+            "result : Number = 125",
+            "Circle (b<10){b = b + 1}",
+            "EverythingEnds (0, 5, 2,) { b = b + 1}",
+            "Slip(0==0){b = b +2}",
+            "Show{ a & *Hola a todos: * & a}",
+            "Show {*The result is: * & result & * which is great!*}",
+            "Show {*El numero es: * & a}",
+            "Show {a & * Hola*}",
+            " "
+        };
 
-            StringBuilder texto = new StringBuilder();
-            String linea;
-            while (!(linea = scanner.nextLine()).isEmpty()) {
+        StringBuilder texto = new StringBuilder();
+
+        // Iterar sobre el array de cadenas y construir el texto completo
+        for (String linea : codes2) {
+            if (!linea.trim().isEmpty()) {
                 texto.append(linea).append("\n");
             }
-
-            Semantic parser = new Semantic();
-            parser.parseText(texto.toString());
-
-            System.out.println("Variables aceptadas:");
-            for (Variable var : parser.getVariables()) {
-                System.out.println("Tipo: " + var.getTipo() + ", Nombre: " + var.getNombre() + ", Valor: " + var.getValor());
-            }
-
-            scanner.close();
         }
-         */
+
+        Semantic parser = new Semantic();
+        parser.parseText(texto.toString());
+
+        System.out.println("Variables aceptadas:");
+        for (Variable var : parser.getVariables()) {
+            System.out.println("Tipo: " + var.getTipo() + ", Nombre: " + var.getNombre() + ", Valor: " + var.getValor());
+        }
     }
 }

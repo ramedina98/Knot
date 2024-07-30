@@ -86,9 +86,6 @@ public class SyntaxAnalyzerVariables {
             throw new SyntaxException("Unexpected type: " + type.getValue());
         }
 
-        // Expect a dot token at the end of the declaration
-        expect(TokenType.DOT);
-
         // store the variable in the variable table...
         variableTable.put(identifier.getValue(), value);
 
@@ -182,16 +179,4 @@ public class SyntaxAnalyzerVariables {
         return value.equals("True") || value.equals("False");
     }
 
-
-    //TODO: Ver si servira en el futuro...
-    //NOTE: Este metodo es de prueba y en el futuro tal vez desaparesca...
-    public void printVariableTable() {
-        System.out.println("Variable Table");
-
-        for(Map.Entry<String, Token> entry : variableTable.entrySet()){
-            String variableName = entry.getKey();
-            Token valueToken = entry.getValue();
-            System.out.println(variableName + " = " + valueToken.getValue());
-        }
-    }
 }

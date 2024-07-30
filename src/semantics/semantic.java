@@ -10,9 +10,7 @@ import utils.Variable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 public class Semantic {
     private Map<String, Variable> variables;
@@ -109,6 +107,18 @@ public class Semantic {
         }
     }
 
+    private double getValue(String operand) {
+        if (variables.containsKey(operand)) {
+            Variable var = variables.get(operand);
+            return (double) var.getValor();
+        }
+        try {
+            return Double.parseDouble(operand);
+        } catch (NumberFormatException e) {
+            return 0.0;
+        }
+    }
+
     private boolean evaluateCondition(String condition) {
         // Evaluar las condiciones booleanas y de comparación
         String[] parts = condition.split("\\s*(==|!=|>|<|>=|<=)\\s*");
@@ -129,19 +139,6 @@ public class Semantic {
             case ">=": return leftValue >= rightValue;
             case "<=": return leftValue <= rightValue;
             default: return false;
-        }
-    }
-
-    private double getValue(String operand) {
-        System.out.println("operand" + operand);
-        if (variables.containsKey(operand)) {
-            Variable var = variables.get(operand);
-            return var.getTipo().equals("Number") ? (double) var.getValor() : 0.0;
-        }
-        try {
-            return Double.parseDouble(operand);
-        } catch (NumberFormatException e) {
-            return 0.0;
         }
     }
 
@@ -167,7 +164,7 @@ public class Semantic {
         String rest = varAndRest[1].trim();
         String[] parts = rest.split("\\s*(\\+|\\-|#|\\/)\\s*");
         if (parts.length != 2) {
-            return array;  // Devolver un array vacío si no hay un operador aritmético válido
+            return array;
         }
 
         String leftOperand = parts[0].trim();
@@ -182,7 +179,7 @@ public class Semantic {
     }
 
     //
-    private void executeOperation(String operation) {
+    public void executeOperation(String operation) {
         // Dividir la operación usando una expresión regular para identificar el operador
         ArrayList<String> separateItems = itemsSeparator(operation);
 
@@ -191,11 +188,23 @@ public class Semantic {
         String operator = separateItems.get(3).split(":")[1].trim();
         String rightOperand = separateItems.get(4).split(":")[1].trim();
 
+        if (!variables.containsKey(variable)) {
+            System.out.println("La variable " + variable + " aun no existe.");
+        }
+
         double leftValue = getValue(leftOperand);
         double rightValue = getValue(rightOperand);
         double result = 0.0;
 
-        System.out.println("Valores: " + leftValue + " " + rightValue);
+        // Validate if operands are not numbers and are not existing variables
+        if (leftValue == 0.0 && !leftOperand.equals("0") && !variables.containsKey(leftOperand)) {
+            System.out.println("Error: El operando izquierdo " + leftOperand + " no es un número ni una variable existente.");
+            return;
+        }
+        if (rightValue == 0.0 && !rightOperand.equals("0") && !variables.containsKey(rightOperand)) {
+            System.out.println("Error: El operando derecho " + rightOperand + " no es un número ni una variable existente.");
+            return;
+        }
 
         switch (operator) {
             case "+": result = leftValue + rightValue; break;
@@ -209,7 +218,7 @@ public class Semantic {
         System.out.println("Resultado de operación: " + variable + " = " + result);
     }
 
-    private void executeShow(String content) {
+    public void executeShow(String content) {
         // Ejecutar operación Show
         String[] parts = content.split("&");
         StringBuilder output = new StringBuilder();
@@ -228,28 +237,15 @@ public class Semantic {
         System.out.println(output.toString());
     }
 
-    public List<Variable> getVariables() {
-        return new ArrayList<>(variables.values());
-    }
-
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Introduce el texto a analizar (termina con una línea vacía):");
-
-        StringBuilder texto = new StringBuilder();
-        String linea;
-        while (!(linea = scanner.nextLine()).isEmpty()) {
-            texto.append(linea).append("\n");
-        }
-
-        Semantic parser = new Semantic();
-        parser.parseText(texto.toString());
-
-        System.out.println("Variables aceptadas:");
-        for (Variable var : parser.getVariables()) {
+    /*private void showVariables() {
+        System.out.println("Variables existentes:");
+        for (Map.Entry<String, Variable> entry : variables.entrySet()) {
+            Variable var = entry.getValue();
             System.out.println("Tipo: " + var.getTipo() + ", Nombre: " + var.getNombre() + ", Valor: " + var.getValor());
         }
+    }*/
 
-        scanner.close();
+    public List<Variable> getVariables() {
+        return new ArrayList<>(variables.values());
     }
 }
