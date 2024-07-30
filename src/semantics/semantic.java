@@ -1,3 +1,8 @@
+/**
+ * @author Noel
+ * @date  27/07/2024
+ */
+
 package semantics;
 
 
@@ -195,6 +200,9 @@ public class semantic {
         String left = parts[0].trim();
         String right = parts[1].trim();
         double rightValue = getValue(right);
+
+        // NOTE: Aun no tiendo que hace esto...
+        System.out.println(rightValue);
 
         // Asumimos que la ecuación está en la forma ax + b = 0 o ax^2 + bx + c = 0
         // Resolveremos solo ecuaciones de primer grado por simplicidad
