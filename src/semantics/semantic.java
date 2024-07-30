@@ -1,13 +1,18 @@
 /**
  * @author Noel
- * @date  27/07/2024
+ * @date 27/07/2024
  */
 
 package semantics;
 
-
 import java.util.regex.*;
-import java.util.*;
+import utils.Variable;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
 
 public class Semantic {
     private Map<String, Variable> variables;
@@ -19,18 +24,16 @@ public class Semantic {
     public void parseText(String texto) {
         String[] lineas = texto.split("\\n");
 
-        //patrones de todo
-        Pattern varPattern = Pattern.compile("(Text|Number|Bool)\\s+([A-Za-z0-9]+)\\s*(=\\s*(.*))?;");
-        Pattern ifPattern = Pattern.compile("Slip\\s+'([A-Za-z0-9]+\\s*(==|≠|>|<|≥|≤)\\s*[A-Za-z0-9]+)'\\s*\\((.*)\\)");
-        Pattern elseIfPattern = Pattern.compile("SlipKnot\\s+'([A-Za-z0-9]+\\s*(==|≠|>|<|≥|≤)\\s*[A-Za-z0-9]+)'\\s*\\((.*)\\)");
-        Pattern elsePattern = Pattern.compile("Knot\\s*\\((.*)\\)");
-        Pattern whilePattern = Pattern.compile("Circle\\s+'([A-Za-z0-9]+\\s*(==|≠|>|<|≥|≤)\\s*[A-Za-z0-9]+)'\\s*\\((.*)\\)");
-        Pattern forPattern = Pattern.compile("EverythingEnds\\s+'(\\d+),\\s*(\\d+),\\s*(\\d+)'\\s*\\((.*)\\)");
-        Pattern switchPattern = Pattern.compile("Duality\\s+'([A-Za-z0-9]+)'\\s*\\((.*)\\)");
-        Pattern defaultPattern = Pattern.compile("Default\\s*\\((.*)\\)");
-        Pattern mathPattern = Pattern.compile("Math\\{(.*)\\}");
+        // Patrones para variables y estructuras de control
+        Pattern varPattern = Pattern.compile("([a-zA-Z_][a-zA-Z0-9_]*)\\s*:\\s*(Number|Text|Bool)\\s*=\\s*(.*)\\s*");
+        Pattern ifPattern = Pattern.compile("Slip\\s*\\((.*)\\)\\s*\\{(.*)\\}");
+        Pattern elseIfPattern = Pattern.compile("SlipKnot\\s*\\((.*)\\)\\s*\\{(.*)\\}");
+        Pattern elsePattern = Pattern.compile("Knot\\s*\\{(.*)\\}");
+        Pattern whilePattern = Pattern.compile("Circle\\s*\\((.*)\\)\\s*\\{(.*)\\}");
+        Pattern forPattern = Pattern.compile("EverythingEnds\\s*\\((\\d+),\\s*(\\d+),\\s*(\\d+),?\\)\\s*\\{(.*)\\}");
+        Pattern showPattern = Pattern.compile("Show\\s*\\{(.*)\\}");
 
-        //matchers de todo
+        // Matchers para cada línea de código
         for (String linea : lineas) {
             Matcher varMatcher = varPattern.matcher(linea.trim());
             Matcher ifMatcher = ifPattern.matcher(linea.trim());
@@ -38,100 +41,82 @@ public class Semantic {
             Matcher elseMatcher = elsePattern.matcher(linea.trim());
             Matcher whileMatcher = whilePattern.matcher(linea.trim());
             Matcher forMatcher = forPattern.matcher(linea.trim());
-            Matcher switchMatcher = switchPattern.matcher(linea.trim());
-            Matcher defaultMatcher = defaultPattern.matcher(linea.trim());
-            Matcher mathMatcher = mathPattern.matcher(linea.trim());
+            Matcher showMatcher = showPattern.matcher(linea.trim());
 
-            //revision de variables
+            // Declaración de variables
             if (varMatcher.matches()) {
-                String tipo = varMatcher.group(1);
-                String nombre = varMatcher.group(2);
-                String valor = varMatcher.group(4) != null ? varMatcher.group(4) : "0";
+                String nombre = varMatcher.group(1).trim();
+                String tipo = varMatcher.group(2).trim();
+                String valor = varMatcher.group(3).trim();
 
+                // here the variable is storage...
                 if (tipo.equals("Number")) {
-                    variables.put(nombre, new Variable(tipo, nombre, Double.parseDouble(valor)));
-                } else {
+                    try {
+                        variables.put(nombre, new Variable(tipo, nombre, Double.parseDouble(valor)));
+                        System.out.println("Variable Aceptada: " + nombre + " = " + valor);
+                    } catch (NumberFormatException e) {
+                        System.out.println("Error al convertir el valor de la variable: " + valor);
+                    }
+                } else if (tipo.equals("Text")) {
                     variables.put(nombre, new Variable(tipo, nombre, valor));
+                    System.out.println("Variable Aceptada: " + nombre + " = " + valor);
+                } else if (tipo.equals("Bool")) {
+                    variables.put(nombre, new Variable(tipo, nombre, Boolean.parseBoolean(valor)));
+                    System.out.println("Variable Aceptada: " + nombre + " = " + valor);
                 }
-                System.out.println("Variable Aceptada: " + nombre + (valor.isEmpty() ? "" : " = " + valor));
-                    //matcher de if(slip, knot, slipknot)
+
+            // Estructuras de control
             } else if (ifMatcher.matches()) {
-                String condition = ifMatcher.group(1);
-                String operation = ifMatcher.group(2);
+                String condition = ifMatcher.group(1).trim();
+                String operation = ifMatcher.group(2).trim();
                 if (evaluateCondition(condition)) {
                     executeOperation(operation);
                 }
             } else if (elseIfMatcher.matches()) {
-                String condition = elseIfMatcher.group(1);
-                String operation = elseIfMatcher.group(2);
+                String condition = elseIfMatcher.group(1).trim();
+                String operation = elseIfMatcher.group(2).trim();
                 if (evaluateCondition(condition)) {
                     executeOperation(operation);
                 }
             } else if (elseMatcher.matches()) {
-                String operation = elseMatcher.group(1);
+                String operation = elseMatcher.group(1).trim();
                 executeOperation(operation);
 
-                //matcher del while(Circle)
             } else if (whileMatcher.matches()) {
-                String condition = whileMatcher.group(1);
-                String operation = whileMatcher.group(2);
+                String condition = whileMatcher.group(1).trim();
+                String operation = whileMatcher.group(2).trim();
                 while (evaluateCondition(condition)) {
                     executeOperation(operation);
                 }
 
-                //matcher del for (everythingfor)
             } else if (forMatcher.matches()) {
-                int start = Integer.parseInt(forMatcher.group(1));
-                int end = Integer.parseInt(forMatcher.group(2));
-                int increment = Integer.parseInt(forMatcher.group(3));
-                String operation = forMatcher.group(4);
+                int start = Integer.parseInt(forMatcher.group(1).trim());
+                int end = Integer.parseInt(forMatcher.group(2).trim());
+                int increment = Integer.parseInt(forMatcher.group(3).trim());
+                String operation = forMatcher.group(4).trim();
                 for (int i = start; i <= end; i += increment) {
                     variables.put("TheEnd", new Variable("Number", "TheEnd", (double) i));
                     executeOperation(operation);
                 }
 
-                //matcher del switch case
-            } else if (switchMatcher.matches()) {
-                String variableName = switchMatcher.group(1);
-                String[] cases = switchMatcher.group(2).split(";");
-                for (String caseStmt : cases) {
-                    if (caseStmt.trim().startsWith("Cut")) {
-                        break;
-                    }
-                    Matcher caseMatcher = Pattern.compile("act\\s*\\*(.*)\\*\\s*;\\s*zona\\s*de\\s*operación\\s*(.*)\\)").matcher(caseStmt.trim());
-                    if (caseMatcher.matches()) {
-                        String condition = caseMatcher.group(1);
-                        String operation = caseMatcher.group(2);
-                        if (evaluateCondition(condition, variableName)) {
-                            executeOperation(operation);
-                            break;
-                        }
-                    }
-                }
+            } else if (showMatcher.matches()) {
+                String content = showMatcher.group(1).trim();
+                executeShow(content);
 
-                //matcher del default
-            } else if (defaultMatcher.matches()) {
-                String operation = defaultMatcher.group(1);
-                executeOperation(operation);
-            } else if (mathMatcher.matches()) {
-                String equation = mathMatcher.group(1);
-                double result = solveEquation(equation);
-                System.out.println("Resultado de Math: " + result);
             } else {
                 System.out.println("Línea no reconocida: " + linea.trim());
             }
         }
     }
 
-    //evaluacion de condicionales (+-*/),(==,!=,<,>)
     private boolean evaluateCondition(String condition) {
         // Evaluar las condiciones booleanas y de comparación
         String[] parts = condition.split("\\s*(==|!=|>|<|>=|<=)\\s*");
         if (parts.length != 2) return false;
 
-        String left = parts[0];
-        String right = parts[1];
-        String operator = condition.replaceAll("[A-Za-z0-9\\s]", "");
+        String left = parts[0].trim();
+        String right = parts[1].trim();
+        String operator = condition.replaceAll("[A-Za-z0-9\\s]", "").trim();
 
         double leftValue = getValue(left);
         double rightValue = getValue(right);
@@ -147,14 +132,8 @@ public class Semantic {
         }
     }
 
-    private boolean evaluateCondition(String condition, String variableName) {
-        // Evaluar la condición de un switch
-        double value = getValue(variableName);
-        double caseValue = getValue(condition);
-        return value == caseValue;
-    }
-
     private double getValue(String operand) {
+        System.out.println("operand" + operand);
         if (variables.containsKey(operand)) {
             Variable var = variables.get(operand);
             return var.getTipo().equals("Number") ? (double) var.getValor() : 0.0;
@@ -166,53 +145,87 @@ public class Semantic {
         }
     }
 
-    //evaluacion de operaciones
+    /**
+     * @author Ricardo Medina
+     * @date: 30/07/2024
+     * @description: This method helps us to extract the require items from the operation String...
+     */
+    private ArrayList<String> itemsSeparator(String operation) {
+        ArrayList<String> array = new ArrayList<>();
+
+        // Dividir la operación en variable y el resto de la operación
+        String[] varAndRest = operation.split("=");
+        if (varAndRest.length != 2) {
+            return array;  // Devolver un array vacío si no hay un signo igual
+        }
+
+        String variable = varAndRest[0].trim();
+        array.add("variable: " + variable);
+        array.add("signo igual: =");
+
+        // Dividir el resto de la operación en operandos y operador
+        String rest = varAndRest[1].trim();
+        String[] parts = rest.split("\\s*(\\+|\\-|#|\\/)\\s*");
+        if (parts.length != 2) {
+            return array;  // Devolver un array vacío si no hay un operador aritmético válido
+        }
+
+        String leftOperand = parts[0].trim();
+        String rightOperand = parts[1].trim();
+        String operator = rest.replaceAll("[^\\+\\-#/]", "").trim();
+
+        array.add("operando izquierda: " + leftOperand);
+        array.add("operador: " + operator);
+        array.add("operando derecha: " + rightOperand);
+
+        return array;
+    }
+
+    //
     private void executeOperation(String operation) {
-        // Ejecutar operaciones aritméticas simples
-        String[] parts = operation.split("\\s*(\\+|\\-|#|\\/)\\s*");
-        if (parts.length != 2) return;
+        // Dividir la operación usando una expresión regular para identificar el operador
+        ArrayList<String> separateItems = itemsSeparator(operation);
 
-        String left = parts[0];
-        String right = parts[1];
-        String operator = operation.replaceAll("[A-Za-z0-9\\s]", "");
+        String variable = separateItems.get(0).split(":")[1].trim();
+        String leftOperand = separateItems.get(2).split(":")[1].trim();
+        String operator = separateItems.get(3).split(":")[1].trim();
+        String rightOperand = separateItems.get(4).split(":")[1].trim();
 
-        double leftValue = getValue(left);
-        double rightValue = getValue(right);
+        double leftValue = getValue(leftOperand);
+        double rightValue = getValue(rightOperand);
         double result = 0.0;
+
+        System.out.println("Valores: " + leftValue + " " + rightValue);
 
         switch (operator) {
             case "+": result = leftValue + rightValue; break;
             case "-": result = leftValue - rightValue; break;
             case "#": result = leftValue * rightValue; break;
             case "/": if (rightValue != 0) result = leftValue / rightValue; break;
+            default: System.out.println("Operador no reconocido: " + operator); return;
         }
 
-        variables.put(left, new Variable("Number", left, result));
-        System.out.println("Resultado de operación: " + left + " = " + result);
+        variables.put(variable, new Variable("Number", variable, result));
+        System.out.println("Resultado de operación: " + variable + " = " + result);
     }
 
-    private double solveEquation(String equation) {
-        // Resolver ecuaciones de primer y segundo grado
-        equation = equation.replace("#", "*");
-        String[] parts = equation.split("=");
-        if (parts.length != 2) return 0.0;
+    private void executeShow(String content) {
+        // Ejecutar operación Show
+        String[] parts = content.split("&");
+        StringBuilder output = new StringBuilder();
 
-        String left = parts[0].trim();
-        String right = parts[1].trim();
-        double rightValue = getValue(right);
-
-        // NOTE: Aun no tiendo que hace esto...
-        System.out.println(rightValue);
-
-        // Asumimos que la ecuación está en la forma ax + b = 0 o ax^2 + bx + c = 0
-        // Resolveremos solo ecuaciones de primer grado por simplicidad
-        if (left.contains("x")) {
-            String[] leftParts = left.split("\\+");
-            double a = getValue(leftParts[0].trim());
-            double b = getValue(leftParts[1].trim());
-            return -b / a;
+        for (String part : parts) {
+            part = part.trim();
+            if (part.startsWith("*") && part.endsWith("*")) {
+                output.append(part.substring(1, part.length() - 1));
+            } else if (variables.containsKey(part)) {
+                output.append(variables.get(part).getValor());
+            } else {
+                output.append(part);
+            }
         }
-        return 0.0;
+
+        System.out.println(output.toString());
     }
 
     public List<Variable> getVariables() {
@@ -240,4 +253,3 @@ public class Semantic {
         scanner.close();
     }
 }
-

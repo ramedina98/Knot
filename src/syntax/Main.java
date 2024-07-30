@@ -63,5 +63,28 @@ public class Main {
             }
             System.out.println();
         }
+
+        /**
+         * public static void main(String[] args) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Introduce el texto a analizar (termina con una línea vacía):");
+
+            StringBuilder texto = new StringBuilder();
+            String linea;
+            while (!(linea = scanner.nextLine()).isEmpty()) {
+                texto.append(linea).append("\n");
+            }
+
+            Semantic parser = new Semantic();
+            parser.parseText(texto.toString());
+
+            System.out.println("Variables aceptadas:");
+            for (Variable var : parser.getVariables()) {
+                System.out.println("Tipo: " + var.getTipo() + ", Nombre: " + var.getNombre() + ", Valor: " + var.getValor());
+            }
+
+            scanner.close();
+        }
+         */
     }
 }

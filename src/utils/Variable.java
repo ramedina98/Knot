@@ -3,7 +3,7 @@
  * @date  27/07/2024
  */
 
-package semantics;
+package utils;
 
 public class Variable {
     private String tipo;
