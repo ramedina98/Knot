@@ -9,10 +9,10 @@ package semantics;
 import java.util.regex.*;
 import java.util.*;
 
-public class semantic {
+public class Semantic {
     private Map<String, Variable> variables;
 
-    public semantic() {
+    public Semantic() {
         this.variables = new HashMap<>();
     }
 
@@ -71,7 +71,7 @@ public class semantic {
                 String operation = elseMatcher.group(1);
                 executeOperation(operation);
 
-                //matcher del while(Circle) 
+                //matcher del while(Circle)
             } else if (whileMatcher.matches()) {
                 String condition = whileMatcher.group(1);
                 String operation = whileMatcher.group(2);
@@ -229,7 +229,7 @@ public class semantic {
             texto.append(linea).append("\n");
         }
 
-        semantic parser = new semantic();
+        Semantic parser = new Semantic();
         parser.parseText(texto.toString());
 
         System.out.println("Variables aceptadas:");
