@@ -53,6 +53,9 @@ public class SyntaxAnalyzerControlStructures {
             case EVERYTHINGENDS:
                 parseForLoop();
                 break;
+            case SHOW:
+                parseShow();
+                break;
             default:
                 throw new SyntaxException("Unexpected token:" + nextToken);
         }
@@ -113,6 +116,15 @@ public class SyntaxAnalyzerControlStructures {
         expect(TokenType.LEFT_BRACE);
         parseBlock();
         expect(TokenType.RIGHT_BRACE);
+    }
+
+    // Show = System.out.println();
+    private void parseShow() throws SyntaxException {
+        expect(TokenType.SHOW);
+        expect(TokenType.LEFT_BRACE);
+        parseShowAssignment();
+        expect(TokenType.RIGHT_BRACE);
+        expect(TokenType.DOT);
     }
 
     /**
@@ -244,6 +256,7 @@ public class SyntaxAnalyzerControlStructures {
             case SLIPKNOT:
             case CIRCLE:
             case EVERYTHINGENDS:
+            case SHOW:
                 // If the token is a control structure keyword, parse it as a control structure.
                 parseControlStructure();
                 break;
@@ -295,5 +308,33 @@ public class SyntaxAnalyzerControlStructures {
 
         // Expect a semicolon ';' to end the assignment statement.
         expect(TokenType.SEMICOLON);
+    }
+
+    /**
+     * This method helps us to define how it should be what Show will contain between the brances...
+     * @throws SyntaxException If an unexpected token is encountered in the statement.
+     */
+    private void parseShowAssignment() throws SyntaxException {
+        // expect the first part of the concatenation (string or identifier)...
+        expectStringOrIdentifier();
+
+        // Loop to handle multiple concatenation...
+        while(currentTokenIndex < tokens.size() && tokens.get(currentTokenIndex).getType() == TokenType.CONCAT){
+            currentTokenIndex++; // Skip the &
+            expectStringOrIdentifier();
+        }
+    }
+
+    /**
+     * Helper method to expect a string or identifier...
+     * @throws SyntaxException if the next token is not a string or identifier...
+     */
+    private void expectStringOrIdentifier() throws SyntaxException {
+        Token token = tokens.get(currentTokenIndex);
+        if(token.getType() == TokenType.STRING || token.getType() == TokenType.IDENTIFIER || token.getType() == TokenType.NUMBER){
+            currentTokenIndex++; // Move to the next token...
+        } else{
+            throw new SyntaxException("Expected String, Identifier, or Number but found: " + token.getType());
+        }
     }
 }

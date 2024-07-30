@@ -124,6 +124,9 @@ public class Lexer {
             } else if(currentChar == ','){ // this condition helps us to find parameter in the EverythingEnds control structure...
                 tokens.add(readParameters());
                 currentChar = readChar();
+            } else if(currentChar == '&'){
+                tokens.add(new Token(TokenType.CONCAT, "&"));
+                currentChar = readChar();
             } else {
                 // Skip whitespace and other characters not explicitly handled
                 currentChar = readChar();  // Read next character
@@ -173,8 +176,8 @@ public class Lexer {
                 return new Token(TokenType.CIRCLE, value);
             case "EverythingEnds":
                 return new Token(TokenType.EVERYTHINGENDS, value);
-            case "Duality":
-                return new Token(TokenType.DUALITY, value);
+            case "Show":
+                return new Token(TokenType.SHOW, value);
             default:
                 return new Token(TokenType.IDENTIFIER, value);
         }

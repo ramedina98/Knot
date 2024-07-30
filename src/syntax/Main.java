@@ -42,6 +42,11 @@ public class Main {
             "SlipKnot (0 >= 1) { a= b+1;}",
             "Circle (a <= 10) { a = a + 1;}",
             "EverythingEnds (0, 10, 1,) { sum = sum + 10;}",
+            "Show { * hola a todos * & a}.",
+            "Slip (0 >= 1) { a = b + 1; Show{ *Hello, World!* }. }",
+            "Show {*The result is: * & result & * which is great!*}.",
+            "Show {*El numero es: * & a}.",
+            "Show {a & * Hola*}."
         };
 
         for (String code : codes1) {
