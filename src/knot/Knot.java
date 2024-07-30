@@ -4,7 +4,6 @@ package knot;
 // .jar
 import gui.Interfaz;
 import javax.swing.SwingUtilities;
-
 /**
  *
  * @author ricardomedina
