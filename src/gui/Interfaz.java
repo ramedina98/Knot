@@ -14,6 +14,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.*;
 
+import detector.Detector;
 import lexer.Lexer;
 import semantics.Semantic;
 import syntax.SyntaxAnalyzerControlStructures;
@@ -41,6 +42,7 @@ import java.util.List;
 
 public class Interfaz extends javax.swing.JFrame {
 
+    private StringBuilder messages;
     private Set<String> palabrasReservadas;
 
     /**
@@ -50,7 +52,19 @@ public class Interfaz extends javax.swing.JFrame {
         initComponents();
         setupListeners();
         inicializarPalabrasReservadas();
+        this.messages = new StringBuilder();
     }
+
+    // method to get all the messages...
+    public String getMessages() {
+        return messages.toString();
+    }
+
+    // method to add menssages...
+    private void appendMenssages(String menssage){
+        messages.append(menssage).append("\n");
+    }
+
 private void inicializarPalabrasReservadas() {
         palabrasReservadas = new HashSet<>();
         palabrasReservadas.add("public");
@@ -215,33 +229,60 @@ private void resaltarPalabrasReservadas(String texto) {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void process(String[] lines){
-        for (String code : lines) {
-            txtConsola.setText("Testing code: " + code);
-            Lexer lexer = new Lexer(new StringReader(code));
-            List<Token> tokens = lexer.tokenize();
-
-            SyntaxAnalyzerVariables syntaxAnalyzer = new SyntaxAnalyzerVariables(tokens);
-            try {
-                syntaxAnalyzer.analyze();
-                txtConsola.setText("Syntax is correct.");
-
-            } catch (SyntaxException e) {
-                txtConsola.setText("Syntax error: " + e.getMessage());
-            }
+    // this method cleans the text areas...
+    private void cleanTxtAreas(char op){
+        switch (op) {
+            case 'f':
+                txtCodigo.setText("");
+            break;
+            case 's':
+                txtConsola.setText("");
+            break;
+            case 'b':
+                txtCodigo.setText("");
+                txtConsola.setText("");
+            break;
+            default:
+                System.out.println("Opción no valida");
+            break;
         }
+    }
+
+    // This method make all the necessary process to read the text area and process it...
+    private void process(String[] lines){
 
         for (String code : lines) {
-            txtConsola.setText("Testing code: " + code);
-            Lexer lexer = new Lexer(new StringReader(code));
-            List<Token> tokens = lexer.tokenize();
+            // initialize the detector class and pass its as a parameter the line in which we are going to...
+            Detector detect = new Detector(code);
 
-            SyntaxAnalyzerControlStructures syntaxAnalyzer = new SyntaxAnalyzerControlStructures(tokens);
-            try {
-                syntaxAnalyzer.analyze();
-                txtConsola.setText("Syntax is correct.");
-            } catch (SyntaxException e) {
-                txtConsola.setText("Syntax error: " + e.getMessage());
+            // check if it is a variable, true means that the line is a variable...
+            if(detect.typeOfline()){
+                System.out.println("Variable\n");
+                appendMenssages("Testing code: " + code);
+                Lexer lexer = new Lexer(new StringReader(code));
+                List<Token> tokens = lexer.tokenize();
+
+                SyntaxAnalyzerVariables syntaxAnalyzer = new SyntaxAnalyzerVariables(tokens);
+                try {
+                    syntaxAnalyzer.analyze();
+                    appendMenssages("Syntax is correct.");
+
+                } catch (SyntaxException e) {
+                    appendMenssages("Syntax error: " + e.getMessage());
+                }
+            } else{ // if it is not a variable, is a control structure en we get into this...
+                System.out.println("Control Structure\n");
+                appendMenssages("Testing code: " + code);
+                Lexer lexer = new Lexer(new StringReader(code));
+                List<Token> tokens = lexer.tokenize();
+
+                SyntaxAnalyzerControlStructures syntaxAnalyzer = new SyntaxAnalyzerControlStructures(tokens);
+                try {
+                    syntaxAnalyzer.analyze();
+                    appendMenssages("Syntax is correct.");
+                } catch (SyntaxException e) {
+                    appendMenssages("Syntax error: " + e.getMessage());
+                }
             }
         }
 
@@ -261,19 +302,23 @@ private void resaltarPalabrasReservadas(String texto) {
             txtConsola.setText("Tipo: " + var.getTipo() + ", Nombre: " + var.getNombre() + ", Valor: " + var.getValor());
         }
 
-        txtConsola.setText(parser.getOutput());
+        txtConsola.append(getMessages());
+        txtConsola.append(parser.getOutput());
     }
     // This is the btn Compiler, where with a click all start...
     private void btnCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompilarActionPerformed
+        // clean the console...
+        cleanTxtAreas('s');
         // we get the text (code) of the textArea...
         String text = txtCodigo.getText();
         String[] lines = text.split("\n");
 
+        // then make the process...
         process(lines);
     }//GEN-LAST:event_btnCompilarActionPerformed
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
-        txtCodigo.setText("");
+        cleanTxtAreas('b');
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
     private void jCheckBoxMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ActionPerformed

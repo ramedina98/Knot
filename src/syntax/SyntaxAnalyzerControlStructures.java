@@ -304,9 +304,6 @@ public class SyntaxAnalyzerControlStructures {
         } else {
             throw new SyntaxException("Expected NUMBER, STRING, or BOOLEAN but found: " + tokens.get(currentTokenIndex));
         }
-
-        // Expect a semicolon ';' to end the assignment statement.
-        expect(TokenType.SEMICOLON);
     }
 
     /**

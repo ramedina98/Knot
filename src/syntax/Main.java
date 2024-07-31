@@ -69,14 +69,7 @@ public class Main {
         String[] codes2 = {
             "b : Number = 0",
             "a : Text = *todo va bien*",
-            "result : Number = 125",
-            "Circle (b<10){b = b + 1}",
             "EverythingEnds (0, 5, 2,) { b = b + 1}",
-            "Slip(0==0){b = b +2}",
-            "Show{ a & *Hola a todos: * & a}",
-            "Show {*The result is: * & result & * which is great!*}",
-            "Show {*El numero es: * & a}",
-            "Show {a & * Hola*}",
             " "
         };
 

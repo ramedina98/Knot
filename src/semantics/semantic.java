@@ -6,13 +6,15 @@
 package semantics;
 
 import java.util.regex.*;
+
+import interfaces.PatternConstants;
 import utils.Variable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Semantic {
+public class Semantic implements PatternConstants {
     private Map<String, Variable> variables;
     private StringBuilder output;
 
@@ -34,24 +36,15 @@ public class Semantic {
     public void parseText(String texto) {
         String[] lineas = texto.split("\\n");
 
-        // Patrones para variables y estructuras de control
-        Pattern varPattern = Pattern.compile("([a-zA-Z_][a-zA-Z0-9_]*)\\s*:\\s*(Number|Text|Bool)\\s*=\\s*(.*)\\s*");
-        Pattern ifPattern = Pattern.compile("Slip\\s*\\((.*)\\)\\s*\\{(.*)\\}");
-        Pattern elseIfPattern = Pattern.compile("SlipKnot\\s*\\((.*)\\)\\s*\\{(.*)\\}");
-        Pattern elsePattern = Pattern.compile("Knot\\s*\\{(.*)\\}");
-        Pattern whilePattern = Pattern.compile("Circle\\s*\\((.*)\\)\\s*\\{(.*)\\}");
-        Pattern forPattern = Pattern.compile("EverythingEnds\\s*\\((\\d+),\\s*(\\d+),\\s*(\\d+),?\\)\\s*\\{(.*)\\}");
-        Pattern showPattern = Pattern.compile("Show\\s*\\{(.*)\\}");
-
         // Matchers para cada línea de código
         for (String linea : lineas) {
-            Matcher varMatcher = varPattern.matcher(linea.trim());
-            Matcher ifMatcher = ifPattern.matcher(linea.trim());
-            Matcher elseIfMatcher = elseIfPattern.matcher(linea.trim());
-            Matcher elseMatcher = elsePattern.matcher(linea.trim());
-            Matcher whileMatcher = whilePattern.matcher(linea.trim());
-            Matcher forMatcher = forPattern.matcher(linea.trim());
-            Matcher showMatcher = showPattern.matcher(linea.trim());
+            Matcher varMatcher = VAR_PATTERN.matcher(linea.trim());
+            Matcher ifMatcher = IF_PATTERN.matcher(linea.trim());
+            Matcher elseIfMatcher = ELSE_IF_PATTERN.matcher(linea.trim());
+            Matcher elseMatcher = ELSE_PATTERN.matcher(linea.trim());
+            Matcher whileMatcher = WHILE_PATTERN.matcher(linea.trim());
+            Matcher forMatcher = FOR_PATTERN.matcher(linea.trim());
+            Matcher showMatcher = SHOW_PATTERN.matcher(linea.trim());
 
             // Declaración de variables
             if (varMatcher.matches()) {
@@ -114,7 +107,7 @@ public class Semantic {
                 executeShow(content);
 
             } else {
-                appendOutput(linea.trim());
+                appendOutput("Línea no reconocida: " + linea.trim());
                 System.out.println("Línea no reconocida: " + linea.trim());
             }
         }

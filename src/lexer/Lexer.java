@@ -102,6 +102,7 @@ public class Lexer {
                 tokens.add(new Token(TokenType.LEFT_PAREN, "("));
                 currentChar = readChar();
             } else if(currentChar == ')'){
+                //tokens.add(readParameterOrParen());
                 tokens.add(new Token(TokenType.RIGHT_PAREN, ")"));
                 currentChar = readChar();
             } else if(currentChar == '<'){
