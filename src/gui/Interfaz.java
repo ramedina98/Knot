@@ -2,15 +2,27 @@ package gui;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringReader;
+
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
+
+import lexer.Lexer;
+import semantics.Semantic;
+import syntax.SyntaxAnalyzerControlStructures;
+import syntax.SyntaxAnalyzerVariables;
+import syntax.SyntaxException;
+import syntax.Token;
+import utils.Variable;
+
 import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.List;
 /**
  *
  * @author Oscar Aguilar
@@ -188,12 +200,63 @@ private void resaltarPalabrasReservadas(String texto) {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void process(String[] lines){
+        for (String code : lines) {
+            txtConsola.setText("Testing code: " + code);
+            Lexer lexer = new Lexer(new StringReader(code));
+            List<Token> tokens = lexer.tokenize();
+
+            SyntaxAnalyzerVariables syntaxAnalyzer = new SyntaxAnalyzerVariables(tokens);
+            try {
+                syntaxAnalyzer.analyze();
+                txtConsola.setText("Syntax is correct.");
+
+            } catch (SyntaxException e) {
+                txtConsola.setText("Syntax error: " + e.getMessage());
+            }
+        }
+
+        for (String code : lines) {
+            txtConsola.setText("Testing code: " + code);
+            Lexer lexer = new Lexer(new StringReader(code));
+            List<Token> tokens = lexer.tokenize();
+
+            SyntaxAnalyzerControlStructures syntaxAnalyzer = new SyntaxAnalyzerControlStructures(tokens);
+            try {
+                syntaxAnalyzer.analyze();
+                txtConsola.setText("Syntax is correct.");
+            } catch (SyntaxException e) {
+                txtConsola.setText("Syntax error: " + e.getMessage());
+            }
+        }
+
+        StringBuilder texto = new StringBuilder();
+
+        // Iterar sobre el array de cadenas y construir el texto completo
+        for (String linea : lines) {
+            if (!linea.trim().isEmpty()) {
+                texto.append(linea).append("\n");
+            }
+        }
+
+        Semantic parser = new Semantic();
+        parser.parseText(texto.toString());
+
+        for (Variable var : parser.getVariables()) {
+            txtConsola.setText("Tipo: " + var.getTipo() + ", Nombre: " + var.getNombre() + ", Valor: " + var.getValor());
+        }
+    }
+    // This is the btn Compiler, where with a click all start...
     private void btnCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompilarActionPerformed
-        // TODO add your handling code here:
+        // we get the text (code) of the textArea...
+        String text = txtCodigo.getText();
+        String[] lines = text.split("\n");
+
+        process(lines);
     }//GEN-LAST:event_btnCompilarActionPerformed
 
     private void btnLimpiarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLimpiarActionPerformed
- txtCodigo.setText("");
+        txtCodigo.setText("");
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
     private void jCheckBoxMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ActionPerformed
@@ -225,7 +288,7 @@ private void resaltarPalabrasReservadas(String texto) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
