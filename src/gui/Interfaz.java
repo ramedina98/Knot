@@ -1,9 +1,11 @@
 package gui;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
 
+import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -245,6 +247,8 @@ private void resaltarPalabrasReservadas(String texto) {
         for (Variable var : parser.getVariables()) {
             txtConsola.setText("Tipo: " + var.getTipo() + ", Nombre: " + var.getNombre() + ", Valor: " + var.getValor());
         }
+
+        txtConsola.setText(parser.getOutput());
     }
     // This is the btn Compiler, where with a click all start...
     private void btnCompilarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompilarActionPerformed
@@ -260,25 +264,34 @@ private void resaltarPalabrasReservadas(String texto) {
     }//GEN-LAST:event_btnLimpiarActionPerformed
 
     private void jCheckBoxMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBoxMenuItem1ActionPerformed
-    String codigo = txtCodigo.getText();
+         // Mostrar JFileChooser para seleccionar el archivo
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle("Guardar archivo");
+        fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Archivos de texto (*.txt)", "txt"));
 
-    String nombreArchivo = JOptionPane.showInputDialog(null, "Ingrese el nombre del archivo:", "Guardar archivo", JOptionPane.PLAIN_MESSAGE);
+        int userSelection = fileChooser.showSaveDialog(null);
 
-    if (nombreArchivo != null && !nombreArchivo.trim().isEmpty()) {
-        if (!nombreArchivo.endsWith(".txt")) {
-            nombreArchivo += ".txt";
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+
+            // Asegurarse de que el archivo tenga extensión .txt
+            String filePath = fileToSave.getAbsolutePath();
+            if (!filePath.endsWith(".txt")) {
+                filePath += ".txt";
+                fileToSave = new File(filePath);
+            }
+
+            String codigo = txtCodigo.getText(); // Reemplaza con tu contenido
+
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileToSave))) {
+                writer.write(codigo);
+                JOptionPane.showMessageDialog(null, "El código ha sido guardado exitosamente en " + fileToSave.getAbsolutePath());
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Error al guardar el archivo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "No se seleccionó ningún archivo", "Información", JOptionPane.INFORMATION_MESSAGE);
         }
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(nombreArchivo))) {
-            writer.write(codigo);
-            JOptionPane.showMessageDialog(null, "El código ha sido guardado exitosamente en " + nombreArchivo);
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(null, "Error al guardar el archivo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    } else {
-        JOptionPane.showMessageDialog(null, "Nombre de archivo no válido", "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
     }//GEN-LAST:event_jCheckBoxMenuItem1ActionPerformed
 
     /**

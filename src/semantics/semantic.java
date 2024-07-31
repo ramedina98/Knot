@@ -14,9 +14,21 @@ import java.util.List;
 
 public class Semantic {
     private Map<String, Variable> variables;
+    private StringBuilder output;
 
     public Semantic() {
         this.variables = new HashMap<>();
+        this.output = new StringBuilder();
+    }
+
+    // Method to obtain the accumulated messages...
+    public String getOutput() {
+        return output.toString();
+    }
+
+    // Method to add message...
+    private void appendOutput(String message) {
+        output.append(message).append("\n");
     }
 
     public void parseText(String texto) {
@@ -102,6 +114,7 @@ public class Semantic {
                 executeShow(content);
 
             } else {
+                appendOutput(linea.trim());
                 System.out.println("Línea no reconocida: " + linea.trim());
             }
         }
@@ -189,6 +202,7 @@ public class Semantic {
         String rightOperand = separateItems.get(4).split(":")[1].trim();
 
         if (!variables.containsKey(variable)) {
+            appendOutput("La variable " + variable + " aun no existe.");
             System.out.println("La variable " + variable + " aun no existe.");
         }
 
@@ -198,10 +212,12 @@ public class Semantic {
 
         // Validate if operands are not numbers and are not existing variables
         if (leftValue == 0.0 && !leftOperand.equals("0") && !variables.containsKey(leftOperand)) {
+            appendOutput("Error: El operando izquierdo " + leftOperand + " no es un número ni una variable existente.");
             System.out.println("Error: El operando izquierdo " + leftOperand + " no es un número ni una variable existente.");
             return;
         }
         if (rightValue == 0.0 && !rightOperand.equals("0") && !variables.containsKey(rightOperand)) {
+            appendOutput("Error: El operando derecho " + rightOperand + " no es un número ni una variable existente.");
             System.out.println("Error: El operando derecho " + rightOperand + " no es un número ni una variable existente.");
             return;
         }
@@ -211,17 +227,21 @@ public class Semantic {
             case "-": result = leftValue - rightValue; break;
             case "#": result = leftValue * rightValue; break;
             case "/": if (rightValue != 0) result = leftValue / rightValue; break;
-            default: System.out.println("Operador no reconocido: " + operator); return;
+            default:
+                appendOutput("Operador no reconocido: " + operator);
+                System.out.println("Operador no reconocido: " + operator);
+                return;
         }
 
         variables.put(variable, new Variable("Number", variable, result));
+        appendOutput("Resultado de operación: " + variable + " = " + result);
         System.out.println("Resultado de operación: " + variable + " = " + result);
     }
 
     public void executeShow(String content) {
         // Ejecutar operación Show
         String[] parts = content.split("&");
-        StringBuilder output = new StringBuilder();
+        StringBuilder output1 = new StringBuilder();
 
         for (String part : parts) {
             part = part.trim();
@@ -234,7 +254,8 @@ public class Semantic {
             }
         }
 
-        System.out.println(output.toString());
+        appendOutput(output1.toString());
+        System.out.println(output1.toString());
     }
 
     /*private void showVariables() {
