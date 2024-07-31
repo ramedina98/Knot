@@ -1,6 +1,8 @@
 package gui;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringReader;
@@ -9,6 +11,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.*;
 
 import lexer.Lexer;
@@ -135,8 +138,9 @@ private void resaltarPalabrasReservadas(String texto) {
         btnCompilar = new javax.swing.JButton();
         btnLimpiar = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
-        jMenu1 = new javax.swing.JMenu();
+        jMenuOpenFile = new javax.swing.JMenu();
         jCheckBoxMenuItem1 = new javax.swing.JCheckBoxMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -179,7 +183,7 @@ private void resaltarPalabrasReservadas(String texto) {
         getContentPane().add(btnLimpiar);
         btnLimpiar.setBounds(210, 0, 220, 30);
 
-        jMenu1.setText("Archivo");
+        jMenuOpenFile.setText("Archivo");
 
         jCheckBoxMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_G, java.awt.event.InputEvent.CTRL_DOWN_MASK));
         jCheckBoxMenuItem1.setSelected(true);
@@ -189,9 +193,18 @@ private void resaltarPalabrasReservadas(String texto) {
                 jCheckBoxMenuItem1ActionPerformed(evt);
             }
         });
-        jMenu1.add(jCheckBoxMenuItem1);
+        jMenuOpenFile.add(jCheckBoxMenuItem1);
 
-        jMenuBar1.add(jMenu1);
+        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_P, java.awt.event.InputEvent.CTRL_DOWN_MASK));
+        jMenuItem1.setText("Open File");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenuOpenFile.add(jMenuItem1);
+
+        jMenuBar1.add(jMenuOpenFile);
 
         jMenu2.setText("Edit");
         jMenuBar1.add(jMenu2);
@@ -294,6 +307,35 @@ private void resaltarPalabrasReservadas(String texto) {
         }
     }//GEN-LAST:event_jCheckBoxMenuItem1ActionPerformed
 
+    // Thiis method helps us to select a file, open it and put the contenct in the Text area txtCodigo...
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        // Crear un objeto JFileChooser
+        JFileChooser fileChooser = new JFileChooser();
+
+        // Filtrar solo archivos de texto
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("Archivos de texto (.txt)", "txt");
+        fileChooser.setFileFilter(filter);
+
+        // Mostrar el cuadro de diálogo para seleccionar el archivo
+        int result = fileChooser.showOpenDialog(null);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+
+            // Leer el contenido del archivo y cargarlo en el área de texto
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                StringBuilder content = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    content.append(line).append("\n");
+                }
+                txtCodigo.setText(content.toString());
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(null, "Error al leer el archivo: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -333,9 +375,10 @@ private void resaltarPalabrasReservadas(String texto) {
     private javax.swing.JButton btnCompilar;
     private javax.swing.JButton btnLimpiar;
     private javax.swing.JCheckBoxMenuItem jCheckBoxMenuItem1;
-    private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenu jMenuOpenFile;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTextArea txtCodigo;
