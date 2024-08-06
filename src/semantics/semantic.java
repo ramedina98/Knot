@@ -251,14 +251,6 @@ public class Semantic implements PatternConstants {
         System.out.println(output1.toString());
     }
 
-    /*private void showVariables() {
-        System.out.println("Variables existentes:");
-        for (Map.Entry<String, Variable> entry : variables.entrySet()) {
-            Variable var = entry.getValue();
-            System.out.println("Tipo: " + var.getTipo() + ", Nombre: " + var.getNombre() + ", Valor: " + var.getValor());
-        }
-    }*/
-
     public List<Variable> getVariables() {
         return new ArrayList<>(variables.values());
     }
