@@ -1,4 +1,30 @@
 # Knot Compiler
+
+## Table of Contents
+- [Introduction](#Introduction)
+- [Purpose](#Purpose)
+- [Variables](#Variables)
+- [Data-Types](#data-typesData)
+- [Control Structures](#control-structures)
+- [Arithmetic Operations](#arithmetic-operations)
+- [Console.log()](#consolelog)
+- [Examples](#examples)
+- [Syntax Analysis Description](#syntax-analysis-description)
+- [Path to classes](#path-to-classes)
+- [Detector Class](#detector-class)
+- [Token Class](#token-class)
+- [TokenType Enum](#tokentype-enum)
+- [Semantic analysis](#semantic-analysis)
+- [Semantics Class](#semantics-class)
+- [Unit Test](#unit-test)
+- [Integration Test](#integration-test)
+- [System Test](#system-test)
+- [Technologies used](#technologies-used)
+- [IDE](#ide)
+- [Development Team](#development-team)
+- [Contact](#contact)
+
+## Introduction
 Knot is inspired by PSeint and takes its name from the nu metal band `Slipknot`. This project seeks to develop a pseudo-language with a simple and easy to use structure, but also powerful and typed. Knot's syntax is designed to be intuitive and comfortable for programmers, and its development is done in Java.
 
 ## Purpose
