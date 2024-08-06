@@ -1,5 +1,5 @@
 # Knot Compiler
-Knot is inspired by PSeint and takes its name from the nu metal band Slipknot. This project seeks to develop a pseudo-language with a simple and easy to use structure, but also powerful and typed. Knot's syntax is designed to be intuitive and comfortable for programmers, and its development is done in Java.
+Knot is inspired by PSeint and takes its name from the nu metal band `Slipknot`. This project seeks to develop a pseudo-language with a simple and easy to use structure, but also powerful and typed. Knot's syntax is designed to be intuitive and comfortable for programmers, and its development is done in Java.
 
 ## Purpose
 The purpose of this project, at present, is to present a viable product for further development in the future. For this reason, at this stage, the Knot pseudo-language only has three types of variables and four types of control structures. In the future, we plan to continue its development and create a more robust pseudo-language.
@@ -9,11 +9,11 @@ In variable declarations, Knot is inspired by the way variables are declared in 
 ### Data Types
 The data types supported in Knot are:
 - **Text:** This type includes String and Char.
-    - Declaration: **variableName** : **Text** = *String or char*
+    - Declaration: **variableName** : **Text** = `*String or char*`
 - **Number:** This type includes int, float, and double.
-    - Declaration: **variableName** : **Number** = 3
+    - Declaration: **variableName** : **Number** = `3`
 - **Bool:** Abbreviation for boolean.
-    - Declaration: **variableName** : **Bool** = True
+    - Declaration: **variableName** : **Bool** = `True`
 
 ## Control Structures
 For any language or pseudo-language, having control structures is essential. Therefore, Knot includes the 4 basic ones: **if**, **else**, **while**, and **for**, as well as **switch**. The unique aspect is that their names are inspired by words or song titles related to the nu metal band Slipknot. The new names for the control structures are as follows:
@@ -49,14 +49,14 @@ Its Equivalent -> Show{}
 - **Variable Declaration:** `Show{a}`
 
 ## Examples
-one : Number = 1456
-n : Text = ***hi***
-variable : Text = *chart*
-variable : Bool = `True`
-b : Number = 0
-a : Text = *todo va bien*
-EverythingEnds (0, 5, 2){b = b + 1}
-Slip(0==0){uno = uno + 1}
+- one : Number = 1456
+- n : Text = `*hi*`
+- variable : Text = `*chart*`
+- variable : Bool = `True`
+- b : Number = `0`
+- a : Text = *todo va bien*
+- EverythingEnds (0, 5, 2){b = b + 1}
+- Slip(0==0){uno = uno + 1}
 
 ## Syntax Analysis Description
 
@@ -559,7 +559,7 @@ public class Semantic implements PatternConstants {
 - Swing <img src="https://www.qfs.de/fileadmin/Webdata/logos-icons/java-swing-schriftzug.png" width="50">
 
 ## IDE
-- Visual Studio Code <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Visual_Studio_Code_1.35_icon.svg/512px-Visual_Studio_Code_1.35_icon.svg.png?20210804221519" width="50">
+- Visual Studio Code <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Visual_Studio_Code_1.35_icon.svg/512px-Visual_Studio_Code_1.35_icon.svg.png?20210804221519" width="30">
 - NeatBeans Apache <img src="https://download.logo.wine/logo/NetBeans/NetBeans-Logo.wine.png" width="50">
 
 ## Development Team
